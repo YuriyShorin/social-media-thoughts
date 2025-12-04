@@ -1,0 +1,70 @@
+version: '3.8'
+
+services:
+
+  eureka-service:
+    build:
+      dockerfile: ./eureka-service/Dockerfile
+    restart: unless-stopped
+    ports:
+      - "8761:8761"
+    networks:
+      - social-media-thoughts-network
+    environment:
+      eureka.instance.hostname: eureka-service
+      eureka.client.serviceUrl.defaultZone: http://eureka-service:8761/eureka/
+
+  api-gateway:
+    build:
+      dockerfile: ./api-gateway/Dockerfile
+    restart: unless-stopped
+    ports:
+      - "8080:8080"
+    depends_on:
+      eureka-service:
+        condition: service_started
+    networks:
+      - social-media-thoughts-network
+    environment:
+      server.port: 8080
+      eureka.client.serviceUrl.defaultZone: http://eureka-service:8761/eureka/
+
+  authentication-service:
+    build:
+      dockerfile: ./authentication-service/Dockerfile
+    restart: unless-stopped
+    ports:
+      - "9000:9000"
+    depends_on:
+      eureka-service:
+        condition: service_started
+      authentication-service-database:
+        condition: service_started
+    environment:
+      DB_HOST: authentication-service-database
+      DB_PORT: 8000
+      POSTGRES_USER: auth-service-user
+      POSTGRES_PASSWORD: odn1Dl
+      spring.liquibase.enabled: true
+      eureka.client.serviceUrl.defaultZone: http://eureka-service:8761/eureka/
+    networks:
+      - social-media-thoughts-network
+
+  authentication-service-database:
+    image: "postgres:17"
+    restart: unless-stopped
+    environment:
+      POSTGRES_USER: auth-service-user
+      POSTGRES_PASSWORD: odn1Dl
+      POSTGRES_DB: AuthenticationServiceDB
+    ports:
+      - "8000"
+    volumes:
+      - ./postgres-data:/var/lib/authentication-service-database/data
+    command: -p 8000
+    networks:
+      - social-media-thoughts-network
+
+networks:
+  social-media-thoughts-network:
+    driver: bridge

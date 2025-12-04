@@ -1,0 +1,22 @@
+version: '3.8'
+
+services:
+
+  authentication-service-database-local:
+    image: "postgres:17"
+    restart: unless-stopped
+    environment:
+      POSTGRES_USER: auth-service-user
+      POSTGRES_PASSWORD: odn1Dl
+      POSTGRES_DB: AuthenticationServiceDB
+    ports:
+      - "5432:5432"
+    volumes:
+      - ./postgres-data:/var/lib/authentication-service-database/data
+    command: -p 5432
+    networks:
+      - social-media-thoughts-network
+
+networks:
+  social-media-thoughts-network:
+    driver: bridge

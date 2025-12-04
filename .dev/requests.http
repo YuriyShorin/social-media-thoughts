@@ -1,0 +1,33 @@
+@baseUrl = http://localhost:8080
+
+### Signup
+POST {{baseUrl}}/api/v1/authentication/signup
+content-type: application/json
+
+{
+  "email": "ivanov@gmail.com",
+  "phone": "+79086807945",
+  "nickname": "ivanov",
+  "password": "12345678",
+  "passwordConfirmation": "12345678"
+}
+
+### Login
+POST {{baseUrl}}/api/v1/authentication/login
+content-type: application/json
+
+{
+  "login": "ivanov@gmail.com",
+  "password": "12345678"
+}
+
+> {%
+    client.global.set("token", response.body.jwtToken);
+%}
+
+### Get user
+GET {{baseUrl}}/api/v1/user
+content-type: application/json
+Authorization: Bearer {{token}}
+
+
