@@ -1,27 +1,39 @@
 package ru.shorin.authenticationservice.mapper
 
-import org.mapstruct.Mapper
-import org.mapstruct.Mapping
+import org.springframework.stereotype.Component
 import ru.shorin.authenticationservice.dto.GetUserResponseDto
 import ru.shorin.authenticationservice.dto.SignupRequestDto
 import ru.shorin.authenticationservice.model.User
 import ru.shorin.model.Role
 import java.sql.Timestamp
-import java.time.LocalDateTime
+import java.time.Instant
 
-@Mapper(imports = [Role::class, Timestamp::class, LocalDateTime::class])
-interface UserMapper {
-    @Mapping(target = "role", expression = "java(Role.USER)")
-    @Mapping(target = "createdAt", expression = "java(Timestamp.valueOf(LocalDateTime.now()))")
-    @Mapping(target = "lastLoginAt", expression = "java(Timestamp.valueOf(LocalDateTime.now()))")
-    @Mapping(target = "password", source = "password")
-    @Mapping(target = "enabled", constant = "true")
-    @Mapping(target = "expired", constant = "false")
-    @Mapping(target = "deleted", constant = "false")
+@Component
+class UserMapper {
     fun toUser(
         signupRequestDto: SignupRequestDto,
         password: String,
-    ): User
+    ) = User(
+        id = null,
+        email = signupRequestDto.email,
+        password = password,
+        phone = signupRequestDto.phone,
+        nickname = signupRequestDto.nickname,
+        role = Role.USER,
+        lastLoginAt = null,
+        enabled = true,
+        expired = false,
+        deleted = false,
+        createdAt = Timestamp.from(Instant.now()),
+        updatedAt = null,
+    )
 
-    fun toGetUserResponseDto(user: User): GetUserResponseDto
+    fun toGetUserResponseDto(user: User) =
+        GetUserResponseDto(
+            id = user.id,
+            email = user.email,
+            phone = user.phone,
+            nickname = user.nickname,
+            createdAt = user.createdAt,
+        )
 }

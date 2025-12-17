@@ -10,7 +10,7 @@ plugins {
 
 java {
     toolchain {
-        languageVersion = JavaLanguageVersion.of(21)
+        languageVersion = JavaLanguageVersion.of(25)
     }
 }
 
@@ -54,10 +54,6 @@ dependencies {
     runtimeOnly("io.jsonwebtoken:jjwt-impl:0.13.0")
     runtimeOnly("io.jsonwebtoken:jjwt-jackson:0.13.0")
 
-    // mapping
-    implementation("org.mapstruct:mapstruct:1.6.3")
-    kapt("org.mapstruct:mapstruct-processor:1.6.3")
-
     // test
     testImplementation("org.springframework.boot:spring-boot-starter-test")
     testImplementation("org.mockito.kotlin:mockito-kotlin:6.1.0")
@@ -66,12 +62,6 @@ dependencies {
 kotlin {
     compilerOptions {
         freeCompilerArgs.addAll("-Xjsr305=strict", "-Xannotation-default-target=param-property")
-    }
-}
-
-kapt {
-    arguments {
-        arg("mapstruct.defaultComponentModel", "spring")
     }
 }
 
@@ -92,12 +82,12 @@ tasks.withType<JacocoReport> {
                 fileTree(it) {
                     exclude(
                         "**/generated/**",
-                        "ru/shorin/config/**",
-                        "ru/shorin/dto/**",
-                        "ru/shorin/exception/**",
-                        "ru/shorin/mapper/**",
-                        "ru/shorin/model/**",
-                        "ru/shorin/Application",
+                        "ru/shorin/authenticationservice/config/**",
+                        "ru/shorin/authenticationservice/dto/**",
+                        "ru/shorin/authenticationservice/exception/**",
+                        "ru/shorin/authenticationservice/mapper/**",
+                        "ru/shorin/authenticationservice/model/**",
+                        "ru/shorin/authenticationservice/AuthenticationServiceApplication.kt",
                     )
                 }
             },
@@ -110,7 +100,10 @@ tasks.register<JacocoCoverageVerification>("jacocoCoverageVerification") {
 
     violationRules {
         rule {
+            element = "CLASS"
             limit {
+                counter = "LINE"
+                value = "COVEREDRATIO"
                 minimum = 0.80.toBigDecimal()
             }
         }

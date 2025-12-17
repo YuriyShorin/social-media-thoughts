@@ -30,7 +30,7 @@ class User(
     @Column(name = "role", unique = false, nullable = false, updatable = true)
     val role: Role,
     @Column(name = "last_login_at", unique = false, nullable = true, updatable = true)
-    val lastLoginAt: Timestamp,
+    val lastLoginAt: Timestamp?,
     @Column(name = "enabled", unique = false, nullable = false, updatable = true)
     val enabled: Boolean,
     @Column(name = "expired", unique = false, nullable = false, updatable = true)
