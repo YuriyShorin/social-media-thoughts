@@ -99,7 +99,7 @@ tasks.withType<JacocoCoverageVerification> {
     violationRules {
         rule {
             limit {
-                minimum = 0.1.toBigDecimal()
+                minimum = 0.25.toBigDecimal()
             }
         }
     }
