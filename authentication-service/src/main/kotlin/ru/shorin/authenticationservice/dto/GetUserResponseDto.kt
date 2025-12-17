@@ -7,7 +7,7 @@ import java.util.UUID
 @Schema(description = "Ответ на получение данных о пользователе")
 data class GetUserResponseDto(
     @Schema(description = "Идентификатор", required = true, nullable = false)
-    val id: UUID,
+    val id: UUID?,
     @Schema(description = "Электронная почта", required = true, nullable = false)
     val email: String,
     @Schema(description = "Номер телефона", required = true, nullable = false)

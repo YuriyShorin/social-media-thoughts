@@ -10,7 +10,7 @@ CREATE TABLE IF NOT EXISTS Security.Users
     nickname      TEXT UNIQUE NOT NULL,
     password      TEXT        NOT NULL,
     role          SMALLINT    NOT NULL,
-    last_login_at TIMESTAMPTZ NOT NULL DEFAULT now(),
+    last_login_at TIMESTAMPTZ,
     enabled       BOOLEAN     NOT NULL DEFAULT TRUE,
     expired       BOOLEAN     NOT NULL DEFAULT FALSE,
     deleted       BOOLEAN     NOT NULL DEFAULT FALSE,
