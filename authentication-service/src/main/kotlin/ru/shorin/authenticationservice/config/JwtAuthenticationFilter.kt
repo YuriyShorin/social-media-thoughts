@@ -12,12 +12,12 @@ import org.springframework.security.core.userdetails.UserDetailsService
 import org.springframework.security.web.authentication.WebAuthenticationDetailsSource
 import org.springframework.stereotype.Component
 import org.springframework.web.filter.OncePerRequestFilter
-import ru.shorin.authenticationservice.service.JwtService
+import ru.shorin.authenticationservice.service.AccessTokenService
 import java.io.IOException
 
 @Component
 class JwtAuthenticationFilter(
-    private val jwtService: JwtService,
+    private val accessTokenService: AccessTokenService,
     private val userDetailsService: UserDetailsService,
 ) : OncePerRequestFilter() {
     @Throws(ServletException::class, IOException::class)
@@ -34,14 +34,14 @@ class JwtAuthenticationFilter(
         }
 
         val jwt = authHeader.substring(7)
-        val userEmail = jwtService.extractEmail(jwt)
+        val userEmail = accessTokenService.extractEmail(jwt)
 
         val authentication: Authentication? = SecurityContextHolder.getContext().authentication
 
         if (authentication == null) {
             val userDetails: UserDetails = userDetailsService.loadUserByUsername(userEmail)
 
-            if (jwtService.isTokenValid(jwt, userDetails)) {
+            if (accessTokenService.isTokenValid(jwt, userDetails)) {
                 val authToken =
                     UsernamePasswordAuthenticationToken(
                         userDetails,

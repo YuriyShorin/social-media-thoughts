@@ -11,6 +11,7 @@ class RouteValidator {
             listOf(
                 "/api/v1/authentication/signup",
                 "/api/v1/authentication/login",
+                "/api/v1/authentication/refresh",
                 "/v3/api-docs",
                 "/eureka",
             )
