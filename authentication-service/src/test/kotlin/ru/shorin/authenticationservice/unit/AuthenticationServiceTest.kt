@@ -12,12 +12,13 @@ import org.mockito.kotlin.whenever
 import org.springframework.http.HttpStatus
 import org.springframework.security.authentication.AuthenticationManager
 import org.springframework.security.crypto.password.PasswordEncoder
-import ru.shorin.authenticationservice.dto.SignupRequestDto
+import ru.shorin.authenticationservice.dto.signup.SignupRequestDto
 import ru.shorin.authenticationservice.mapper.UserMapper
 import ru.shorin.authenticationservice.model.User
 import ru.shorin.authenticationservice.repository.UserRepository
+import ru.shorin.authenticationservice.service.AccessTokenService
 import ru.shorin.authenticationservice.service.AuthenticationService
-import ru.shorin.authenticationservice.service.JwtService
+import ru.shorin.authenticationservice.service.RefreshTokenService
 
 @ExtendWith(MockitoExtension::class)
 class AuthenticationServiceTest {
@@ -34,7 +35,10 @@ class AuthenticationServiceTest {
     lateinit var authenticationManager: AuthenticationManager
 
     @Mock
-    lateinit var jwtService: JwtService
+    lateinit var refreshTokenService: RefreshTokenService
+
+    @Mock
+    lateinit var accessTokenService: AccessTokenService
 
     @InjectMocks
     lateinit var authenticationService: AuthenticationService

@@ -7,23 +7,28 @@ import org.springframework.security.authentication.UsernamePasswordAuthenticatio
 import org.springframework.security.crypto.password.PasswordEncoder
 import org.springframework.stereotype.Service
 import org.springframework.transaction.annotation.Transactional
-import ru.shorin.authenticationservice.dto.LoginRequestDto
-import ru.shorin.authenticationservice.dto.LoginResponseDto
-import ru.shorin.authenticationservice.dto.SignupRequestDto
+import ru.shorin.authenticationservice.dto.login.LoginRequestDto
+import ru.shorin.authenticationservice.dto.login.LoginResponseDto
+import ru.shorin.authenticationservice.dto.signup.SignupRequestDto
+import ru.shorin.authenticationservice.dto.token.RefreshRequestDto
+import ru.shorin.authenticationservice.dto.token.RefreshTokenResponseDto
 import ru.shorin.authenticationservice.mapper.UserMapper
+import ru.shorin.authenticationservice.model.User
 import ru.shorin.authenticationservice.repository.UserRepository
 import ru.shorin.exception.BusinessException
 import ru.shorin.exception.BusinessExceptionEnum
 import java.sql.Timestamp
+import java.time.Instant
 import java.time.LocalDateTime
 
 @Service
 class AuthenticationService(
+    private val refreshTokenService: RefreshTokenService,
+    private val accessTokenService: AccessTokenService,
     private val userRepository: UserRepository,
     private val userMapper: UserMapper,
     private val passwordEncoder: PasswordEncoder,
     private val authenticationManager: AuthenticationManager,
-    private val jwtService: JwtService,
 ) {
     @Transactional
     fun signup(signupRequestDto: SignupRequestDto): ResponseEntity<Void> {
@@ -45,8 +50,8 @@ class AuthenticationService(
 
         val password =
             passwordEncoder
-                .encode(signupRequestDto.password)
-                .toString()
+                .encode(signupRequestDto.password) ?: ""
+
         val user = userMapper.toUser(signupRequestDto, password)
         userRepository.save(user)
 
@@ -66,6 +71,30 @@ class AuthenticationService(
         return loginByNickname(loginRequestDto.login, loginRequestDto.password)
     }
 
+    @Transactional
+    fun refresh(refreshRequestDto: RefreshRequestDto): ResponseEntity<RefreshTokenResponseDto> {
+        val refreshToken =
+            refreshTokenService
+                .findByToken(refreshRequestDto.refreshToken)
+                ?: throw BusinessException(BusinessExceptionEnum.UNAUTHORIZED_ACCESS)
+
+        if (refreshToken.revoked) {
+            throw BusinessException(BusinessExceptionEnum.UNAUTHORIZED_ACCESS)
+        }
+
+        if (refreshToken.expiresAt < Timestamp.from(Instant.now())) {
+            throw BusinessException(BusinessExceptionEnum.UNAUTHORIZED_ACCESS)
+        }
+
+        refreshTokenService.revokeToken(refreshToken.token)
+
+        val (accessToken, newRefreshToken) = generateTokens(refreshToken.user)
+
+        return ResponseEntity
+            .ok()
+            .body(RefreshTokenResponseDto(accessToken, newRefreshToken))
+    }
+
     private fun loginByEmail(
         email: String,
         password: String,
@@ -80,12 +109,13 @@ class AuthenticationService(
         val user =
             userRepository.findByEmail(email)
                 ?: throw BusinessException(BusinessExceptionEnum.USER_NOT_FOUND_BY_EMAIL)
-        val jwtToken = jwtService.generateToken(user)
         userRepository.updateLastLoginAtById(user.id, Timestamp.valueOf(LocalDateTime.now()))
+
+        val (accessToken, refreshToken) = generateTokens(user)
 
         return ResponseEntity
             .ok()
-            .body(LoginResponseDto(jwtToken))
+            .body(LoginResponseDto(accessToken, refreshToken))
     }
 
     private fun loginByPhone(
@@ -108,5 +138,12 @@ class AuthenticationService(
                 ?: throw BusinessException(BusinessExceptionEnum.USER_NOT_FOUND_BY_NICKNAME)
 
         return loginByEmail(user.email, password)
+    }
+
+    private fun generateTokens(user: User): Pair<String, String> {
+        val accessToken = accessTokenService.generateToken(user)
+        val refreshToken = refreshTokenService.generateToken(user)
+
+        return accessToken to refreshToken
     }
 }

@@ -1,8 +1,8 @@
 package ru.shorin.authenticationservice.mapper
 
 import org.springframework.stereotype.Component
-import ru.shorin.authenticationservice.dto.GetUserResponseDto
-import ru.shorin.authenticationservice.dto.SignupRequestDto
+import ru.shorin.authenticationservice.dto.signup.SignupRequestDto
+import ru.shorin.authenticationservice.dto.user.GetUserResponseDto
 import ru.shorin.authenticationservice.model.User
 import ru.shorin.model.Role
 import java.sql.Timestamp
@@ -34,6 +34,6 @@ class UserMapper {
             email = user.email,
             phone = user.phone,
             nickname = user.nickname,
-            createdAt = user.createdAt,
+            createdAt = user.createdAt.toInstant(),
         )
 }

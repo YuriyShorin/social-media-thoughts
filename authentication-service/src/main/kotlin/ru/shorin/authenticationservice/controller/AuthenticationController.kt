@@ -11,9 +11,11 @@ import org.springframework.web.bind.annotation.PostMapping
 import org.springframework.web.bind.annotation.RequestBody
 import org.springframework.web.bind.annotation.RequestMapping
 import org.springframework.web.bind.annotation.RestController
-import ru.shorin.authenticationservice.dto.LoginRequestDto
-import ru.shorin.authenticationservice.dto.LoginResponseDto
-import ru.shorin.authenticationservice.dto.SignupRequestDto
+import ru.shorin.authenticationservice.dto.login.LoginRequestDto
+import ru.shorin.authenticationservice.dto.login.LoginResponseDto
+import ru.shorin.authenticationservice.dto.signup.SignupRequestDto
+import ru.shorin.authenticationservice.dto.token.RefreshRequestDto
+import ru.shorin.authenticationservice.dto.token.RefreshTokenResponseDto
 import ru.shorin.authenticationservice.service.AuthenticationService
 import ru.shorin.dto.BusinessExceptionResponseDto
 import ru.shorin.dto.InternalErrorResponseDto
@@ -128,4 +130,44 @@ class AuthenticationController(
     fun login(
         @RequestBody loginRequestDto: LoginRequestDto,
     ): ResponseEntity<LoginResponseDto> = authenticationService.login(loginRequestDto)
+
+    @Operation(summary = "Вход")
+    @ApiResponses(
+        value = [
+            ApiResponse(
+                responseCode = "200",
+                description = "Вход успешно произведен",
+                content = [
+                    Content(
+                        mediaType = "application/json",
+                        schema = Schema(implementation = RefreshRequestDto::class),
+                    ),
+                ],
+            ),
+            ApiResponse(
+                responseCode = "401",
+                description = "Refresh token не найден или истек срок его действия",
+                content = [
+                    Content(
+                        mediaType = "application/json",
+                        schema = Schema(implementation = BusinessExceptionResponseDto::class),
+                    ),
+                ],
+            ),
+            ApiResponse(
+                responseCode = "500",
+                description = "Внутренняя ошибка сервера",
+                content = [
+                    Content(
+                        mediaType = "application/json",
+                        schema = Schema(implementation = InternalErrorResponseDto::class),
+                    ),
+                ],
+            ),
+        ],
+    )
+    @PostMapping("/refresh")
+    fun refresh(
+        @RequestBody refreshRequestDto: RefreshRequestDto,
+    ): ResponseEntity<RefreshTokenResponseDto> = authenticationService.refresh(refreshRequestDto)
 }

@@ -45,4 +45,6 @@ logging:
 security:
   jwt:
     secret: 3cfa76ef14937c1c0ea519f8fc057a80fcd04a7420f8e8bcd0a7567c272e007b
-    expires-in: 12960000
+    access-token-expires-in: 900000
+    refresh-token-expires-in: 604800000
+

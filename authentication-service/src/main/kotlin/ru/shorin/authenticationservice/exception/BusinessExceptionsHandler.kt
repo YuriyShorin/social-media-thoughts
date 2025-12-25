@@ -46,10 +46,10 @@ class BusinessExceptionsHandler : ResponseEntityExceptionHandler() {
         log.error("Unhandled runtime exception: ", runtimeException)
 
         return ResponseEntity
-            .status(HttpStatus.INTERNAL_SERVER_ERROR)
+            .status(BusinessExceptionEnum.INTERNAL_SERVER_ERROR.status)
             .body(
                 InternalErrorResponseDto(
-                    userMessage = "Ошибка сервера, обратитесь в техподдержку",
+                    userMessage = BusinessExceptionEnum.INTERNAL_SERVER_ERROR.message,
                     errorMessage = runtimeException.message,
                 ),
             )
