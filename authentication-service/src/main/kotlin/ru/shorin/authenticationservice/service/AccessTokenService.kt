@@ -7,10 +7,9 @@ import org.springframework.stereotype.Service
 import ru.shorin.authenticationservice.model.User
 import ru.shorin.utils.JwtUtils
 import java.util.Date
-import javax.crypto.SecretKey
 
 @Service
-class JwtService(
+class AccessTokenService(
     private val jwtUtils: JwtUtils,
 ) {
     fun extractEmail(token: String): String = jwtUtils.extractEmail(token)
@@ -49,8 +48,8 @@ class JwtService(
             .claims(extraClaims)
             .subject(user.email)
             .issuedAt(Date(System.currentTimeMillis()))
-            .expiration(Date(System.currentTimeMillis() + jwtUtils.getExpiresIn()))
-            .signWith(getSignInKey(), Jwts.SIG.HS256)
+            .expiration(Date(System.currentTimeMillis() + jwtUtils.getAccessTokenExpiresIn()))
+            .signWith(jwtUtils.getSignInKey(), Jwts.SIG.HS256)
             .compact()
     }
 
@@ -59,6 +58,4 @@ class JwtService(
             .before(Date())
 
     private fun extractExpiration(token: String): Date = extractClaim(token, Claims::getExpiration)
-
-    private fun getSignInKey(): SecretKey = jwtUtils.getSignInKey()
 }

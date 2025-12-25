@@ -1,7 +1,7 @@
-package ru.shorin.authenticationservice.dto
+package ru.shorin.authenticationservice.dto.user
 
 import io.swagger.v3.oas.annotations.media.Schema
-import java.sql.Timestamp
+import java.time.Instant
 import java.util.UUID
 
 @Schema(description = "Ответ на получение данных о пользователе")
@@ -15,5 +15,5 @@ data class GetUserResponseDto(
     @Schema(description = "Никнейм", required = true, nullable = false)
     val nickname: String,
     @Schema(description = "Дата создания", required = true, nullable = false)
-    val createdAt: Timestamp,
+    val createdAt: Instant,
 )

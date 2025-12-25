@@ -22,12 +22,26 @@ content-type: application/json
 }
 
 > {%
-    client.global.set("token", response.body.jwtToken);
+    client.global.set("accessToken", response.body.accessToken);
+    client.global.set("refreshToken", response.body.refreshToken);
+%}
+
+### Refresh
+POST {{baseUrl}}/api/v1/authentication/refresh
+content-type: application/json
+
+{
+  "refreshToken": "{{refreshToken}}"
+}
+
+> {%
+    client.global.set("accessToken", response.body.accessToken);
+    client.global.set("refreshToken", response.body.refreshToken);
 %}
 
 ### Get user
 GET {{baseUrl}}/api/v1/user
 content-type: application/json
-Authorization: Bearer {{token}}
+Authorization: Bearer {{accessToken}}
 
 

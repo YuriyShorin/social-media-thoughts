@@ -30,3 +30,21 @@ COMMENT ON COLUMN Security.Users.expired IS 'Флаг, показывающий 
 COMMENT ON COLUMN Security.Users.deleted IS 'Флаг, показывающий удален ли пользователь';
 COMMENT ON COLUMN Security.Users.created_at IS 'Время создания записи';
 COMMENT ON COLUMN Security.Users.created_at IS 'Время обновления записи';
+
+CREATE TABLE IF NOT EXISTS Security.Refresh_tokens
+(
+    id         UUID PRIMARY KEY     DEFAULT gen_random_uuid(),
+    token      TEXT        NOT NULL UNIQUE,
+    user_id    UUID        NOT NULL REFERENCES Security.Users (id) ON DELETE CASCADE,
+    expires_at TIMESTAMPTZ NOT NULL,
+    revoked    BOOLEAN     NOT NULL DEFAULT FALSE,
+    created_at TIMESTAMPTZ NOT NULL DEFAULT now()
+);
+
+COMMENT ON TABLE Security.Refresh_tokens IS 'Таблица хранения refresh токенов';
+COMMENT ON COLUMN Security.Refresh_tokens.id IS 'Идентификатор';
+COMMENT ON COLUMN Security.Refresh_tokens.token IS 'Токен';
+COMMENT ON COLUMN Security.Refresh_tokens.user_id IS 'Идентификатор пользователя';
+COMMENT ON COLUMN Security.Refresh_tokens.expires_at IS 'Время истечения токена';
+COMMENT ON COLUMN Security.Refresh_tokens.revoked IS 'Флаг аннулированного токена';
+COMMENT ON COLUMN Security.Refresh_tokens.created_at IS 'Время создания записи';
