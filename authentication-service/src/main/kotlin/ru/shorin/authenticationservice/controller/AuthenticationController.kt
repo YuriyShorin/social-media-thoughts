@@ -14,7 +14,7 @@ import org.springframework.web.bind.annotation.RestController
 import ru.shorin.authenticationservice.dto.login.LoginRequestDto
 import ru.shorin.authenticationservice.dto.login.LoginResponseDto
 import ru.shorin.authenticationservice.dto.signup.SignupRequestDto
-import ru.shorin.authenticationservice.dto.token.RefreshRequestDto
+import ru.shorin.authenticationservice.dto.token.RefreshTokenRequestDto
 import ru.shorin.authenticationservice.dto.token.RefreshTokenResponseDto
 import ru.shorin.authenticationservice.service.AuthenticationService
 import ru.shorin.dto.BusinessExceptionResponseDto
@@ -131,16 +131,26 @@ class AuthenticationController(
         @RequestBody loginRequestDto: LoginRequestDto,
     ): ResponseEntity<LoginResponseDto> = authenticationService.login(loginRequestDto)
 
-    @Operation(summary = "Вход")
+    @Operation(summary = "Обновление токена")
     @ApiResponses(
         value = [
             ApiResponse(
                 responseCode = "200",
-                description = "Вход успешно произведен",
+                description = "Токен успешно обновлен",
                 content = [
                     Content(
                         mediaType = "application/json",
-                        schema = Schema(implementation = RefreshRequestDto::class),
+                        schema = Schema(implementation = RefreshTokenRequestDto::class),
+                    ),
+                ],
+            ),
+            ApiResponse(
+                responseCode = "400",
+                description = "Ошибка валидации входных данных",
+                content = [
+                    Content(
+                        mediaType = "application/json",
+                        schema = Schema(implementation = ValidationExceptionResponseDto::class),
                     ),
                 ],
             ),
@@ -166,8 +176,8 @@ class AuthenticationController(
             ),
         ],
     )
-    @PostMapping("/refresh")
-    fun refresh(
-        @RequestBody refreshRequestDto: RefreshRequestDto,
-    ): ResponseEntity<RefreshTokenResponseDto> = authenticationService.refresh(refreshRequestDto)
+    @PostMapping("/refresh-token")
+    fun refreshToken(
+        @RequestBody refreshRequestDto: RefreshTokenRequestDto,
+    ): ResponseEntity<RefreshTokenResponseDto> = authenticationService.refreshToken(refreshRequestDto)
 }
