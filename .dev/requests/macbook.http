@@ -1,0 +1,75 @@
+@macBookId = 1f1beaf1-c858-4fcc-bca2-f6b6899650d7
+@safari = SAFARI
+@macBook = MacBook M4 Pro
+@macOs = MACOS
+
+### MacBook login
+POST {{baseUrl}}/api/v1/authentication/login
+content-type: application/json
+
+{
+  "login": "ivanov@gmail.com",
+  "password": "12345678",
+  "deviceInfo": {
+    "deviceId": "{{macBookId}}",
+    "client": "{{safari}}",
+    "deviceName": "{{macBook}}",
+    "os": "{{macOs}}",
+    "ip": "{{ip}}"
+  }
+}
+
+> {%
+    client.global.set("macBookAccessToken", response.body.accessToken);
+    client.global.set("macBookRefreshToken", response.body.refreshToken);
+%}
+
+### MacBook refresh
+POST {{baseUrl}}/api/v1/authentication/refresh
+content-type: application/json
+
+{
+  "refreshToken": "{{macBookRefreshToken}}",
+  "deviceInfo": {
+    "deviceId": "{{macBookId}}",
+    "client": "{{safari}}",
+    "deviceName": "{{macBook}}",
+    "os": "{{macOs}}",
+    "ip": "{{ip}}"
+  }
+}
+
+> {%
+    client.global.set("macBookAccessToken", response.body.accessToken);
+    client.global.set("macBookRefreshToken", response.body.refreshToken);
+%}
+
+### MacBook get  user
+GET {{baseUrl}}/api/v1/user
+content-type: application/json
+Authorization: Bearer {{macBookAccessToken}}
+
+### MacBook get sessions
+GET {{baseUrl}}/api/v1/session
+content-type: application/json
+Authorization: Bearer {{macBookAccessToken}}
+
+### MacBook logout
+POST {{baseUrl}}/api/v1/session/logout
+content-type: application/json
+Authorization: Bearer {{macBookAccessToken}}
+
+{
+  "deviceInfo": {
+    "deviceId": "{{macBookId}}",
+    "client": "{{safari}}",
+    "deviceName": "{{macBook}}",
+    "os": "{{macOs}}",
+    "ip": "{{ip}}"
+  }
+}
+
+### MacBook logout all
+GET {{baseUrl}}/api/v1/session/logout-all
+content-type: application/json
+Authorization: Bearer {{macBookAccessToken}}\

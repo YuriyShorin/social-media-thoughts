@@ -1,0 +1,75 @@
+@samsungId = 70a18c08-9177-49a1-bccf-ee2b212986c2
+@androidApp = ANDROID_APP
+@samsung = Samsung Galaxy S25
+@android = ANDROID
+
+### Samsung login
+POST {{baseUrl}}/api/v1/authentication/login
+content-type: application/json
+
+{
+  "login": "ivanov@gmail.com",
+  "password": "12345678",
+  "deviceInfo": {
+    "deviceId": "{{samsungId}}",
+    "client": "{{androidApp}}",
+    "deviceName": "{{samsung}}",
+    "os": "{{android}}",
+    "ip": "{{ip}}"
+  }
+}
+
+> {%
+    client.global.set("samsungAccessToken", response.body.accessToken);
+    client.global.set("samsungRefreshToken", response.body.refreshToken);
+%}
+
+### Samsung refresh
+POST {{baseUrl}}/api/v1/authentication/refresh
+content-type: application/json
+
+{
+  "refreshToken": "{{samsungRefreshToken}}",
+  "deviceInfo": {
+    "deviceId": "{{samsungId}}",
+    "client": "{{androidApp}}",
+    "deviceName": "{{samsung}}",
+    "os": "{{android}}",
+    "ip": "{{ip}}"
+  }
+}
+
+> {%
+    client.global.set("samsungAccessToken", response.body.accessToken);
+    client.global.set("samsungRefreshToken", response.body.refreshToken);
+%}
+
+### Samsung get user
+GET {{baseUrl}}/api/v1/user
+content-type: application/json
+Authorization: Bearer {{samsungAccessToken}}
+
+### Samsung get sessions
+GET {{baseUrl}}/api/v1/session
+content-type: application/json
+Authorization: Bearer {{samsungAccessToken}}
+
+### Samsung logout
+POST {{baseUrl}}/api/v1/session/logout
+content-type: application/json
+Authorization: Bearer {{samsungAccessToken}}
+
+{
+  "deviceInfo": {
+    "deviceId": "{{samsungId}}",
+    "client": "{{androidApp}}",
+    "deviceName": "{{samsung}}",
+    "os": "{{android}}",
+    "ip": "{{ip}}"
+  }
+}
+
+### Samsung logout all
+GET {{baseUrl}}/api/v1/session/logout-all
+content-type: application/json
+Authorization: Bearer {{samsungAccessToken}}

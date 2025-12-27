@@ -1,0 +1,75 @@
+@iphoneId = fe3c197c-0e11-4071-91b8-90aff01ed691
+@iosApp = IOS_APP
+@iphone = Iphone 17 Pro Max
+@ios = IOS
+
+### Iphone login
+POST {{baseUrl}}/api/v1/authentication/login
+content-type: application/json
+
+{
+  "login": "ivanov@gmail.com",
+  "password": "12345678",
+  "deviceInfo": {
+    "deviceId": "{{iphoneId}}",
+    "client": "{{iosApp}}",
+    "deviceName": "{{iphone}}",
+    "os": "{{ios}}",
+    "ip": "{{ip}}"
+  }
+}
+
+> {%
+    client.global.set("iphoneAccessToken", response.body.accessToken);
+    client.global.set("iphoneRefreshToken", response.body.refreshToken);
+%}
+
+### Iphone refresh
+POST {{baseUrl}}/api/v1/authentication/refresh
+content-type: application/json
+
+{
+  "refreshToken": "{{iphoneRefreshToken}}",
+  "deviceInfo": {
+    "deviceId": "{{iphoneId}}",
+    "client": "{{iosApp}}",
+    "deviceName": "{{iphone}}",
+    "os": "{{ios}}",
+    "ip": "{{ip}}"
+  }
+}
+
+> {%
+    client.global.set("iphoneAccessToken", response.body.accessToken);
+    client.global.set("iphoneRefreshToken", response.body.refreshToken);
+%}
+
+### Iphone get user
+GET {{baseUrl}}/api/v1/user
+content-type: application/json
+Authorization: Bearer {{iphoneAccessToken}}
+
+### Iphone get sessions
+GET {{baseUrl}}/api/v1/session
+content-type: application/json
+Authorization: Bearer {{iphoneAccessToken}}
+
+### Iphone logout
+POST {{baseUrl}}/api/v1/session/logout
+content-type: application/json
+Authorization: Bearer {{iphoneAccessToken}}
+
+{
+  "deviceInfo": {
+    "deviceId": "{{iphoneId}}",
+    "client": "{{iosApp}}",
+    "deviceName": "{{iphone}}",
+    "os": "{{ios}}",
+    "ip": "{{ip}}"
+  }
+}
+
+### Iphone logout all
+GET {{baseUrl}}/api/v1/session/logout-all
+content-type: application/json
+Authorization: Bearer {{iphoneAccessToken}}

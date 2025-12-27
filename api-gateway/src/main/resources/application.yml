@@ -13,7 +13,7 @@ spring:
             - id: authentication-service
               uri: http://localhost:9000
               predicates:
-                - Path=/authentication-service/**,/api/v1/authentication/**,/api/v1/user/**
+                - Path=/authentication-service/**,/api/v1/authentication/**,/api/v1/user/**,/api/v1/session/**
               filters:
                 - name: AuthenticationFilter
   web:

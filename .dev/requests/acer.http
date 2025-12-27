@@ -1,0 +1,75 @@
+@acerId = b5ab3ee0-e13a-4769-befa-641c9ac655ab
+@chrome = CHROME
+@acer = Acer Nitro 5
+@windows = WINDOWS
+
+### Acer login
+POST {{baseUrl}}/api/v1/authentication/login
+content-type: application/json
+
+{
+  "login": "ivanov@gmail.com",
+  "password": "12345678",
+  "deviceInfo": {
+    "deviceId": "{{acerId}}",
+    "client": "{{chrome}}",
+    "deviceName": "{{acer}}",
+    "os": "{{windows}}",
+    "ip": "{{ip}}"
+  }
+}
+
+> {%
+    client.global.set("acerAccessToken", response.body.accessToken);
+    client.global.set("acerRefreshToken", response.body.refreshToken);
+%}
+
+### Acer refresh
+POST {{baseUrl}}/api/v1/authentication/refresh
+content-type: application/json
+
+{
+  "refreshToken": "{{acerRefreshToken}}",
+  "deviceInfo": {
+    "deviceId": "{{acerId}}",
+    "client": "{{chrome}}",
+    "deviceName": "{{acer}}",
+    "os": "{{windows}}",
+    "ip": "{{ip}}"
+  }
+}
+
+> {%
+    client.global.set("acerAccessToken", response.body.accessToken);
+    client.global.set("acerRefreshToken", response.body.refreshToken);
+%}
+
+### Acer get user
+GET {{baseUrl}}/api/v1/user
+content-type: application/json
+Authorization: Bearer {{acerAccessToken}}
+
+### Acer get sessions
+GET {{baseUrl}}/api/v1/session
+content-type: application/json
+Authorization: Bearer {{acerAccessToken}}
+
+### Acer logout
+POST {{baseUrl}}/api/v1/session/logout
+content-type: application/json
+Authorization: Bearer {{acerAccessToken}}
+
+{
+  "deviceInfo": {
+    "deviceId": "{{acerId}}",
+    "client": "{{chrome}}",
+    "deviceName": "{{acer}}",
+    "os": "{{windows}}",
+    "ip": "{{ip}}"
+  }
+}
+
+### Acer logout all
+GET {{baseUrl}}/api/v1/session/logout-all
+content-type: application/json
+Authorization: Bearer {{acerAccessToken}}

@@ -10,10 +10,10 @@ import org.springframework.transaction.annotation.Transactional
 import ru.shorin.authenticationservice.dto.login.LoginRequestDto
 import ru.shorin.authenticationservice.dto.login.LoginResponseDto
 import ru.shorin.authenticationservice.dto.signup.SignupRequestDto
-import ru.shorin.authenticationservice.dto.token.RefreshRequestDto
+import ru.shorin.authenticationservice.dto.token.RefreshTokenRequestDto
 import ru.shorin.authenticationservice.dto.token.RefreshTokenResponseDto
+import ru.shorin.authenticationservice.mapper.SessionMapper
 import ru.shorin.authenticationservice.mapper.UserMapper
-import ru.shorin.authenticationservice.model.User
 import ru.shorin.authenticationservice.repository.UserRepository
 import ru.shorin.exception.BusinessException
 import ru.shorin.exception.BusinessExceptionEnum
@@ -23,10 +23,12 @@ import java.time.LocalDateTime
 
 @Service
 class AuthenticationService(
+    private val userRepository: UserRepository,
     private val refreshTokenService: RefreshTokenService,
     private val accessTokenService: AccessTokenService,
-    private val userRepository: UserRepository,
+    private val geoIpService: GeoIpService,
     private val userMapper: UserMapper,
+    private val sessionMapper: SessionMapper,
     private val passwordEncoder: PasswordEncoder,
     private val authenticationManager: AuthenticationManager,
 ) {
@@ -48,10 +50,7 @@ class AuthenticationService(
             throw BusinessException(BusinessExceptionEnum.NICKNAME_ALREADY_EXISTS)
         }
 
-        val password =
-            passwordEncoder
-                .encode(signupRequestDto.password) ?: ""
-
+        val password = passwordEncoder.encode(signupRequestDto.password) ?: ""
         val user = userMapper.toUser(signupRequestDto, password)
         userRepository.save(user)
 
@@ -61,21 +60,22 @@ class AuthenticationService(
     @Transactional
     fun login(loginRequestDto: LoginRequestDto): ResponseEntity<LoginResponseDto> {
         if (loginRequestDto.login.contains("@")) {
-            return loginByEmail(loginRequestDto.login, loginRequestDto.password)
+            return loginByEmail(loginRequestDto, loginRequestDto.login)
         }
 
         if (loginRequestDto.login.contains("+")) {
-            return loginByPhone(loginRequestDto.login, loginRequestDto.password)
+            return loginByPhone(loginRequestDto)
         }
 
-        return loginByNickname(loginRequestDto.login, loginRequestDto.password)
+        return loginByNickname(loginRequestDto)
     }
 
     @Transactional
-    fun refresh(refreshRequestDto: RefreshRequestDto): ResponseEntity<RefreshTokenResponseDto> {
+    fun refreshToken(refreshTokenRequestDto: RefreshTokenRequestDto): ResponseEntity<RefreshTokenResponseDto> {
+        val (county, city) = geoIpService.resolve(refreshTokenRequestDto.deviceInfo.ip)
+        val deviceInfo = sessionMapper.toDeviceInfo(refreshTokenRequestDto.deviceInfo, county, city)
         val refreshToken =
-            refreshTokenService
-                .findByToken(refreshRequestDto.refreshToken)
+            refreshTokenService.findByToken(refreshTokenRequestDto.refreshToken)
                 ?: throw BusinessException(BusinessExceptionEnum.UNAUTHORIZED_ACCESS)
 
         if (refreshToken.revoked) {
@@ -86,9 +86,10 @@ class AuthenticationService(
             throw BusinessException(BusinessExceptionEnum.UNAUTHORIZED_ACCESS)
         }
 
-        refreshTokenService.revokeToken(refreshToken.token)
+        refreshTokenService.revokeByToken(refreshToken.token)
 
-        val (accessToken, newRefreshToken) = generateTokens(refreshToken.user)
+        val accessToken = accessTokenService.generateToken(refreshToken.user)
+        val newRefreshToken = refreshTokenService.generateToken(refreshToken.user, deviceInfo)
 
         return ResponseEntity
             .ok()
@@ -96,54 +97,47 @@ class AuthenticationService(
     }
 
     private fun loginByEmail(
+        loginRequestDto: LoginRequestDto,
         email: String,
-        password: String,
     ): ResponseEntity<LoginResponseDto> {
         authenticationManager.authenticate(
             UsernamePasswordAuthenticationToken(
                 email,
-                password,
+                loginRequestDto.password,
             ),
         )
 
+        val (county, city) = geoIpService.resolve(loginRequestDto.deviceInfo.ip)
+        val deviceInfo = sessionMapper.toDeviceInfo(loginRequestDto.deviceInfo, county, city)
         val user =
             userRepository.findByEmail(email)
                 ?: throw BusinessException(BusinessExceptionEnum.USER_NOT_FOUND_BY_EMAIL)
         userRepository.updateLastLoginAtById(user.id, Timestamp.valueOf(LocalDateTime.now()))
 
-        val (accessToken, refreshToken) = generateTokens(user)
+        val existsRefreshToken = refreshTokenService.findByDeviceInfo(deviceInfo)
+        existsRefreshToken?.let {
+            refreshTokenService.revokeByToken(it.token)
+        }
+
+        val accessToken = accessTokenService.generateToken(user)
+        val newRefreshToken = refreshTokenService.generateToken(user, deviceInfo)
 
         return ResponseEntity
             .ok()
-            .body(LoginResponseDto(accessToken, refreshToken))
+            .body(LoginResponseDto(accessToken, newRefreshToken))
     }
 
-    private fun loginByPhone(
-        phone: String,
-        password: String,
-    ): ResponseEntity<LoginResponseDto> {
+    private fun loginByPhone(loginRequestDto: LoginRequestDto): ResponseEntity<LoginResponseDto> {
         val user =
-            userRepository.findByPhone(phone)
+            userRepository.findByPhone(loginRequestDto.login)
                 ?: throw BusinessException(BusinessExceptionEnum.USER_NOT_FOUND_BY_PHONE)
-
-        return loginByEmail(user.email, password)
+        return loginByEmail(loginRequestDto, user.email)
     }
 
-    private fun loginByNickname(
-        nickname: String,
-        password: String,
-    ): ResponseEntity<LoginResponseDto> {
+    private fun loginByNickname(loginRequestDto: LoginRequestDto): ResponseEntity<LoginResponseDto> {
         val user =
-            userRepository.findByNickname(nickname)
+            userRepository.findByNickname(loginRequestDto.login)
                 ?: throw BusinessException(BusinessExceptionEnum.USER_NOT_FOUND_BY_NICKNAME)
-
-        return loginByEmail(user.email, password)
-    }
-
-    private fun generateTokens(user: User): Pair<String, String> {
-        val accessToken = accessTokenService.generateToken(user)
-        val refreshToken = refreshTokenService.generateToken(user)
-
-        return accessToken to refreshToken
+        return loginByEmail(loginRequestDto, user.email)
     }
 }

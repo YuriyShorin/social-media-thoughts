@@ -1,0 +1,13 @@
+### Signup
+POST {{baseUrl}}/api/v1/authentication/signup
+content-type: application/json
+
+{
+  "email": "ivanov@gmail.com",
+  "phone": "+79086807945",
+  "nickname": "ivanov",
+  "password": "12345678",
+  "passwordConfirmation": "12345678"
+}
+
+
