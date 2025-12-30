@@ -7,6 +7,7 @@ import io.jsonwebtoken.io.Decoders
 import io.jsonwebtoken.security.Keys
 import org.springframework.stereotype.Component
 import ru.shorin.properties.JwtProperties
+import java.security.MessageDigest
 import java.util.Date
 import javax.crypto.SecretKey
 
@@ -49,6 +50,13 @@ class JwtUtils(
     fun getAccessTokenExpiresIn(): Long = jwtProperties.accessTokenExpiresIn ?: 0L
 
     fun getRefreshTokenExpiresIn(): Long = jwtProperties.refreshTokenExpiresIn ?: 0L
+
+    fun hash(token: String): String {
+        val digest = MessageDigest.getInstance("SHA-256")
+        return digest
+            .digest(token.toByteArray(Charsets.UTF_8))
+            .joinToString("") { "%02x".format(it) }
+    }
 
     private fun extractExpiration(token: String): Date? = extractClaim(token, Claims::getExpiration)
 }

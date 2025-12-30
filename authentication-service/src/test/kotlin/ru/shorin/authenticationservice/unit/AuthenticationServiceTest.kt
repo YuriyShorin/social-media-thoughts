@@ -13,17 +13,31 @@ import org.springframework.http.HttpStatus
 import org.springframework.security.authentication.AuthenticationManager
 import org.springframework.security.crypto.password.PasswordEncoder
 import ru.shorin.authenticationservice.dto.signup.SignupRequestDto
+import ru.shorin.authenticationservice.mapper.SessionMapper
 import ru.shorin.authenticationservice.mapper.UserMapper
 import ru.shorin.authenticationservice.model.User
 import ru.shorin.authenticationservice.repository.UserRepository
 import ru.shorin.authenticationservice.service.AccessTokenService
 import ru.shorin.authenticationservice.service.AuthenticationService
+import ru.shorin.authenticationservice.service.GeoIpService
 import ru.shorin.authenticationservice.service.RefreshTokenService
 
 @ExtendWith(MockitoExtension::class)
 class AuthenticationServiceTest {
     @Mock
+    lateinit var refreshTokenService: RefreshTokenService
+
+    @Mock
+    lateinit var accessTokenService: AccessTokenService
+
+    @Mock
+    lateinit var geoIpService: GeoIpService
+
+    @Mock
     lateinit var userRepository: UserRepository
+
+    @Mock
+    lateinit var sessionMapper: SessionMapper
 
     @Mock
     lateinit var userMapper: UserMapper
@@ -33,12 +47,6 @@ class AuthenticationServiceTest {
 
     @Mock
     lateinit var authenticationManager: AuthenticationManager
-
-    @Mock
-    lateinit var refreshTokenService: RefreshTokenService
-
-    @Mock
-    lateinit var accessTokenService: AccessTokenService
 
     @InjectMocks
     lateinit var authenticationService: AuthenticationService

@@ -25,7 +25,7 @@ content-type: application/json
 %}
 
 ### MacBook refresh
-POST {{baseUrl}}/api/v1/authentication/refresh
+POST {{baseUrl}}/api/v1/authentication/refresh-token
 content-type: application/json
 
 {

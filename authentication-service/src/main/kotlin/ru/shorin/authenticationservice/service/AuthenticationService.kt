@@ -23,10 +23,10 @@ import java.time.LocalDateTime
 
 @Service
 class AuthenticationService(
-    private val userRepository: UserRepository,
     private val refreshTokenService: RefreshTokenService,
     private val accessTokenService: AccessTokenService,
     private val geoIpService: GeoIpService,
+    private val userRepository: UserRepository,
     private val userMapper: UserMapper,
     private val sessionMapper: SessionMapper,
     private val passwordEncoder: PasswordEncoder,
