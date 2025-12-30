@@ -27,18 +27,23 @@ class RefreshTokenService(
             Jwts
                 .builder()
                 .issuedAt(Date(System.currentTimeMillis()))
+                .subject(user.id.toString())
                 .expiration(Date(System.currentTimeMillis() + jwtUtils.getRefreshTokenExpiresIn()))
                 .signWith(jwtUtils.getSignInKey(), Jwts.SIG.HS256)
                 .compact()
         val expiresAt = Timestamp.from(Instant.now().plusMillis(jwtUtils.getRefreshTokenExpiresIn()))
 
-        val newRefreshToken = sessionMapper.toRefreshToken(token, user, deviceInfo, expiresAt)
+        val tokenHash = jwtUtils.hash(token)
+        val newRefreshToken = sessionMapper.toRefreshToken(tokenHash, user, deviceInfo, expiresAt)
         refreshTokenRepository.save(newRefreshToken)
 
         return token
     }
 
-    fun findByToken(token: String): RefreshToken? = refreshTokenRepository.findByToken(token)
+    fun findByToken(token: String): RefreshToken? {
+        val tokenHash = jwtUtils.hash(token)
+        return refreshTokenRepository.findByToken(tokenHash)
+    }
 
     fun findByDeviceInfo(deviceInfo: DeviceInfo): RefreshToken? =
         refreshTokenRepository.findByDeviceInfo(
@@ -55,11 +60,12 @@ class RefreshTokenService(
             refreshTokenRepository.findByUserId(it)
         } ?: emptyList()
 
-    fun revokeByToken(token: String) =
+    fun revokeByToken(token: String) {
         refreshTokenRepository.revokeByToken(
             token = token,
             revokedAt = Timestamp.from(Instant.now()),
         )
+    }
 
     fun revokeByUserId(userId: UUID?) =
         userId?.let {

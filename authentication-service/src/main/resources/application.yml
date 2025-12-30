@@ -17,6 +17,10 @@ spring:
       ddl-auto: none
     show-sql: off
     database: postgresql
+    properties:
+      hibernate:
+        format_sql: true
+
 
   liquibase:
     change-log: classpath:/db/changelog.xml
@@ -41,6 +45,7 @@ logging:
   level:
     root: WARN
     web: WARN
+    org.hibernate.SQL: DEBUG
 
 security:
   jwt:
