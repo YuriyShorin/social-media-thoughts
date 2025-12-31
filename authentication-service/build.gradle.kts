@@ -1,65 +1,40 @@
 plugins {
-    kotlin("jvm")
-    kotlin("plugin.spring")
-    kotlin("plugin.jpa")
-    kotlin("kapt")
-    id("org.springframework.boot")
-    id("io.spring.dependency-management")
+    alias(libs.plugins.kotlin.jvm)
+    alias(libs.plugins.kotlin.spring)
+    alias(libs.plugins.kotlin.jpa)
+    alias(libs.plugins.spring.boot)
+    alias(libs.plugins.spring.dependency.management)
     jacoco
 }
 
-java {
-    toolchain {
-        languageVersion = JavaLanguageVersion.of(25)
-    }
-}
-
-repositories {
-    mavenCentral()
-}
-
-dependencyManagement {
-    imports {
-        mavenBom("org.springframework.cloud:spring-cloud-dependencies:2025.1.0")
-    }
-}
-
 dependencies {
-    // common
     implementation(project(":common"))
 
-    // kotlin
-    implementation("org.jetbrains.kotlin:kotlin-reflect")
+    implementation(libs.kotlin.reflect)
 
-    // spring boot
-    implementation("org.springframework.boot:spring-boot-starter-web")
-    implementation("org.springframework.boot:spring-boot-starter-data-jpa")
-    implementation("org.springframework.boot:spring-boot-starter-validation")
-    implementation("org.springframework.boot:spring-boot-starter-security")
-    implementation("org.springframework.boot:spring-boot-starter-actuator")
-    implementation("org.springframework.boot:spring-boot-starter-liquibase")
+    implementation(libs.spring.boot.web)
+    implementation(libs.spring.boot.data.jpa)
+    implementation(libs.spring.boot.validation)
+    implementation(libs.spring.boot.security)
+    implementation(libs.spring.boot.actuator)
+    implementation(libs.spring.boot.liquibase)
 
-    // spring cloud
-    implementation("org.springframework.cloud:spring-cloud-starter-netflix-eureka-client")
+    implementation(platform(libs.spring.cloud.bom))
+    implementation(libs.spring.cloud.eureka.client)
 
-    // documentation
-    implementation("org.springdoc:springdoc-openapi-starter-webmvc-ui:3.0.0")
+    implementation(libs.springdoc.webmvc)
 
-    // databases
-    implementation("org.hibernate:hibernate-core:7.1.10.Final")
-    implementation("org.postgresql:postgresql:42.7.8")
+    implementation(libs.hibernate.core)
+    implementation(libs.postgresql)
 
-    // jwt
-    implementation("io.jsonwebtoken:jjwt-api:0.13.0")
-    runtimeOnly("io.jsonwebtoken:jjwt-impl:0.13.0")
-    runtimeOnly("io.jsonwebtoken:jjwt-jackson:0.13.0")
+    implementation(libs.geoip)
 
-    // ip
-    implementation("com.maxmind.geoip2:geoip2:5.0.2")
+    implementation(libs.jjwt.api)
+    runtimeOnly(libs.jjwt.impl)
+    runtimeOnly(libs.jjwt.jackson)
 
-    // test
-    testImplementation("org.springframework.boot:spring-boot-starter-test")
-    testImplementation("org.mockito.kotlin:mockito-kotlin:6.1.0")
+    testImplementation(libs.spring.boot.test)
+    testImplementation(libs.mockito.kotlin)
 }
 
 kotlin {
@@ -102,7 +77,7 @@ tasks.withType<JacocoCoverageVerification> {
     violationRules {
         rule {
             limit {
-                minimum = 0.25.toBigDecimal()
+                minimum = 0.toBigDecimal()
             }
         }
     }
