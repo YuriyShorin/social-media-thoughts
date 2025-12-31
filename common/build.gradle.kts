@@ -1,51 +1,21 @@
-import org.springframework.boot.gradle.tasks.bundling.BootJar
-
 plugins {
     `java-library`
-    kotlin("jvm")
-    kotlin("plugin.spring")
-    id("org.springframework.boot")
-}
-
-java {
-    toolchain {
-        languageVersion = JavaLanguageVersion.of(25)
-    }
-}
-
-repositories {
-    mavenCentral()
+    alias(libs.plugins.kotlin.jvm)
+    alias(libs.plugins.kotlin.spring)
 }
 
 dependencies {
-    // kotlin
-    implementation("org.jetbrains.kotlin:kotlin-reflect")
+    implementation(libs.kotlin.reflect)
 
-    // documentation
-    implementation("org.springdoc:springdoc-openapi-starter-webmvc-ui:3.0.0")
+    implementation(libs.springdoc.webmvc)
 
-    // jwt
-    implementation("io.jsonwebtoken:jjwt-api:0.13.0")
-    runtimeOnly("io.jsonwebtoken:jjwt-impl:0.13.0")
-    runtimeOnly("io.jsonwebtoken:jjwt-jackson:0.13.0")
-}
-
-configurations {
-    compileOnly {
-        extendsFrom(configurations.annotationProcessor.get())
-    }
+    implementation(libs.jjwt.api)
+    runtimeOnly(libs.jjwt.impl)
+    runtimeOnly(libs.jjwt.jackson)
 }
 
 kotlin {
     compilerOptions {
         freeCompilerArgs.addAll("-Xjsr305=strict", "-Xannotation-default-target=param-property")
     }
-}
-
-tasks.named<BootJar>("bootJar") {
-    enabled = false
-}
-
-tasks.named<Jar>("jar") {
-    enabled = true
 }
