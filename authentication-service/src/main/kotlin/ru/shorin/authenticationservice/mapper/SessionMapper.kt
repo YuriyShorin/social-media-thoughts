@@ -1,16 +1,16 @@
 package ru.shorin.authenticationservice.mapper
 
 import org.springframework.stereotype.Component
-import ru.shorin.authenticationservice.domain.DeviceInfo
+import ru.shorin.authenticationservice.model.domain.DeviceInfo
 import ru.shorin.authenticationservice.dto.common.ClientDto
 import ru.shorin.authenticationservice.dto.common.DeviceInfoDto
 import ru.shorin.authenticationservice.dto.common.OsDto
 import ru.shorin.authenticationservice.dto.session.GetSessionsResponseDto
 import ru.shorin.authenticationservice.dto.session.SessionDto
-import ru.shorin.authenticationservice.model.Client
-import ru.shorin.authenticationservice.model.Os
-import ru.shorin.authenticationservice.model.RefreshToken
-import ru.shorin.authenticationservice.model.User
+import ru.shorin.authenticationservice.model.domain.Client
+import ru.shorin.authenticationservice.model.domain.Os
+import ru.shorin.authenticationservice.model.entity.RefreshToken
+import ru.shorin.authenticationservice.model.entity.User
 import java.sql.Timestamp
 import java.time.Instant
 

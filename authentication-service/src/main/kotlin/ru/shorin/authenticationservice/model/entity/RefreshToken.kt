@@ -1,4 +1,4 @@
-package ru.shorin.authenticationservice.model
+package ru.shorin.authenticationservice.model.entity
 
 import jakarta.persistence.Column
 import jakarta.persistence.Entity
@@ -10,11 +10,13 @@ import jakarta.persistence.Id
 import jakarta.persistence.JoinColumn
 import jakarta.persistence.ManyToOne
 import jakarta.persistence.Table
+import ru.shorin.authenticationservice.model.domain.Client
+import ru.shorin.authenticationservice.model.domain.Os
 import java.sql.Timestamp
 import java.util.UUID
 
 @Entity
-@Table(name = "RefreshTokens", schema = "Security")
+@Table(name = "RefreshTokens")
 data class RefreshToken(
     @Id
     @GeneratedValue(strategy = GenerationType.UUID)

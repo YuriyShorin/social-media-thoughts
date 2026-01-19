@@ -15,7 +15,7 @@ import org.springframework.security.crypto.password.PasswordEncoder
 import ru.shorin.authenticationservice.dto.signup.SignupRequestDto
 import ru.shorin.authenticationservice.mapper.SessionMapper
 import ru.shorin.authenticationservice.mapper.UserMapper
-import ru.shorin.authenticationservice.model.User
+import ru.shorin.authenticationservice.model.entity.User
 import ru.shorin.authenticationservice.repository.UserRepository
 import ru.shorin.authenticationservice.service.AccessTokenService
 import ru.shorin.authenticationservice.service.AuthenticationService

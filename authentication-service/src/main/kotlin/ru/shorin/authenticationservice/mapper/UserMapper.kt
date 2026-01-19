@@ -3,7 +3,7 @@ package ru.shorin.authenticationservice.mapper
 import org.springframework.stereotype.Component
 import ru.shorin.authenticationservice.dto.signup.SignupRequestDto
 import ru.shorin.authenticationservice.dto.user.GetUserResponseDto
-import ru.shorin.authenticationservice.model.User
+import ru.shorin.authenticationservice.model.entity.User
 import ru.shorin.model.Role
 import java.sql.Timestamp
 import java.time.Instant

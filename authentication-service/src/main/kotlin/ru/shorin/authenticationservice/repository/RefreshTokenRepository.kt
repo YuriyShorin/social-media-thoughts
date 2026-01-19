@@ -4,9 +4,9 @@ import org.springframework.data.jpa.repository.JpaRepository
 import org.springframework.data.jpa.repository.Modifying
 import org.springframework.data.jpa.repository.Query
 import org.springframework.stereotype.Repository
-import ru.shorin.authenticationservice.model.Client
-import ru.shorin.authenticationservice.model.Os
-import ru.shorin.authenticationservice.model.RefreshToken
+import ru.shorin.authenticationservice.model.domain.Client
+import ru.shorin.authenticationservice.model.domain.Os
+import ru.shorin.authenticationservice.model.entity.RefreshToken
 import java.sql.Timestamp
 import java.util.UUID
 
@@ -70,4 +70,23 @@ interface RefreshTokenRepository : JpaRepository<RefreshToken, UUID> {
         userId: UUID,
         revokedAt: Timestamp,
     )
+
+    @Modifying
+    @Query(
+        value = """
+        DELETE FROM RefreshToken rt
+        WHERE rt.revoked = true 
+        AND rt.revokedAt < :revokedBefore
+    """
+    )
+    fun deleteRevoked(revokedBefore: Timestamp)
+
+    @Modifying
+    @Query(
+        value = """
+        DELETE FROM RefreshToken rt
+        WHERE rt.expiresAt < :now
+    """
+    )
+    fun deleteExpired(now: Timestamp)
 }

@@ -1,4 +1,4 @@
-package ru.shorin.authenticationservice.model
+package ru.shorin.authenticationservice.model.domain
 
 enum class Client {
     SAFARI,
