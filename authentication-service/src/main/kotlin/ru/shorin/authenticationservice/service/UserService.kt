@@ -4,7 +4,7 @@ import org.springframework.http.ResponseEntity
 import org.springframework.stereotype.Service
 import ru.shorin.authenticationservice.dto.user.GetUserResponseDto
 import ru.shorin.authenticationservice.mapper.UserMapper
-import ru.shorin.authenticationservice.model.User
+import ru.shorin.authenticationservice.model.entity.User
 
 @Service
 class UserService(

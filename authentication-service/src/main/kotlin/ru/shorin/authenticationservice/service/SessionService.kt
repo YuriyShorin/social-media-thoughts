@@ -6,7 +6,7 @@ import org.springframework.transaction.annotation.Transactional
 import ru.shorin.authenticationservice.dto.logout.LogoutRequestDto
 import ru.shorin.authenticationservice.dto.session.GetSessionsResponseDto
 import ru.shorin.authenticationservice.mapper.SessionMapper
-import ru.shorin.authenticationservice.model.User
+import ru.shorin.authenticationservice.model.entity.User
 import ru.shorin.exception.BusinessException
 import ru.shorin.exception.BusinessExceptionEnum
 

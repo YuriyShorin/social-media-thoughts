@@ -4,7 +4,7 @@ import io.jsonwebtoken.Claims
 import io.jsonwebtoken.Jwts
 import org.springframework.security.core.userdetails.UserDetails
 import org.springframework.stereotype.Service
-import ru.shorin.authenticationservice.model.User
+import ru.shorin.authenticationservice.model.entity.User
 import ru.shorin.utils.JwtUtils
 import java.util.Date
 

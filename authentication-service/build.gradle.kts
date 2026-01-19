@@ -18,6 +18,8 @@ dependencies {
     implementation(libs.spring.boot.security)
     implementation(libs.spring.boot.actuator)
     implementation(libs.spring.boot.liquibase)
+    implementation(libs.spring.boot.preliquibase)
+    implementation(libs.spring.boot.quartz)
 
     implementation(platform(libs.spring.cloud.bom))
     implementation(libs.spring.cloud.eureka.client)

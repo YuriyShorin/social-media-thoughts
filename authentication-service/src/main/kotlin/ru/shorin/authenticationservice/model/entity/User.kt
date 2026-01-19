@@ -1,4 +1,4 @@
-package ru.shorin.authenticationservice.model
+package ru.shorin.authenticationservice.model.entity
 
 import jakarta.persistence.Column
 import jakarta.persistence.Entity
@@ -12,7 +12,7 @@ import ru.shorin.model.Role
 import java.sql.Timestamp
 import java.util.UUID
 
-@Table(schema = "security", name = "users")
+@Table(name = "users")
 @Entity
 class User(
     @Id

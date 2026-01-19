@@ -6,7 +6,7 @@ spring:
     name: authentication-service
 
   datasource:
-    url: jdbc:postgresql://${DB_HOST:localhost}:${DB_PORT:5432}/${DB_NAME:AuthenticationServiceDB}
+    url: jdbc:postgresql://${DB_HOST:localhost}:${DB_PORT:5432}/${DB_NAME:AuthenticationServiceDB}?currentSchema=security,quartz,liquibase
     username: ${POSTGRES_USER:auth-service-user}
     password: ${POSTGRES_PASSWORD:odn1Dl}
     driver-class-name: org.postgresql.Driver
@@ -16,15 +16,49 @@ spring:
     hibernate:
       ddl-auto: none
     show-sql: off
-    database: postgresql
+    database: PostgreSQL
     properties:
       hibernate:
         format_sql: true
 
-
   liquibase:
     change-log: classpath:/db/changelog.xml
     enabled: true
+    liquibase-schema: liquibase
+    parameters:
+      securitySchema: security
+      quartzSchema: quartz
+
+  quartz:
+    job-store-type: jdbc
+    jdbc:
+      initialize-schema: never
+    properties:
+      org:
+        quartz:
+          scheduler:
+            instanceName: auth-service-quartz
+            instanceId: AUTO
+            makeSchedulerThreadDaemon: true
+            interruptJobsOnShutdown: true
+          jobStore:
+            class: org.springframework.scheduling.quartz.LocalDataSourceJobStore
+            driverDelegateClass: org.quartz.impl.jdbcjobstore.PostgreSQLDelegate
+            tablePrefix: qrtz_
+            isClustered: true
+            clusterCheckinInterval: 5000
+            misfireThreshold: 60000
+            useProperties: true
+          threadPool:
+            class: org.quartz.simpl.SimpleThreadPool
+            threadCount: 5
+            threadPriority: 5
+    auto-startup: false
+
+preliquibase:
+  enabled: true
+  sql-script-references:
+    - classpath:/db/preliquibase.sql
 
 springdoc:
   swagger-ui:
@@ -45,11 +79,18 @@ logging:
   level:
     root: WARN
     web: WARN
-    org.hibernate.SQL: DEBUG
+    org.hibernate.SQL: INFO
+    org.quartz.core: INFO
+    org.quartz.impl.jdbcjobstore: INFO
 
 security:
   jwt:
     secret: 3cfa76ef14937c1c0ea519f8fc057a80fcd04a7420f8e8bcd0a7567c272e007b
     access-token-expires-in: 900000
     refresh-token-expires-in: 604800000
+
+jobs:
+  permanent-jobs-group-name: PERMANENT
+  delete-revoked-tokens-job-cron: 0 * * * * ?
+  delete-expired-tokens-job-cron: 15 * * * * ?
 

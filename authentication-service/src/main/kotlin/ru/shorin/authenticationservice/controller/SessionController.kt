@@ -15,7 +15,7 @@ import org.springframework.web.bind.annotation.RequestMapping
 import org.springframework.web.bind.annotation.RestController
 import ru.shorin.authenticationservice.dto.logout.LogoutRequestDto
 import ru.shorin.authenticationservice.dto.session.GetSessionsResponseDto
-import ru.shorin.authenticationservice.model.User
+import ru.shorin.authenticationservice.model.entity.User
 import ru.shorin.authenticationservice.service.SessionService
 import ru.shorin.dto.InternalErrorResponseDto
 import ru.shorin.dto.ValidationExceptionResponseDto

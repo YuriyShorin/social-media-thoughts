@@ -1,7 +1,5 @@
-package ru.shorin.authenticationservice.domain
+package ru.shorin.authenticationservice.model.domain
 
-import ru.shorin.authenticationservice.model.Client
-import ru.shorin.authenticationservice.model.Os
 import java.util.UUID
 
 data class DeviceInfo(

@@ -2,14 +2,16 @@ package ru.shorin.authenticationservice.service
 
 import io.jsonwebtoken.Jwts
 import org.springframework.stereotype.Service
-import ru.shorin.authenticationservice.domain.DeviceInfo
+import org.springframework.transaction.annotation.Transactional
+import ru.shorin.authenticationservice.model.domain.DeviceInfo
 import ru.shorin.authenticationservice.mapper.SessionMapper
-import ru.shorin.authenticationservice.model.RefreshToken
-import ru.shorin.authenticationservice.model.User
+import ru.shorin.authenticationservice.model.entity.RefreshToken
+import ru.shorin.authenticationservice.model.entity.User
 import ru.shorin.authenticationservice.repository.RefreshTokenRepository
 import ru.shorin.utils.JwtUtils
 import java.sql.Timestamp
 import java.time.Instant
+import java.time.temporal.ChronoUnit
 import java.util.Date
 import java.util.UUID
 
@@ -74,4 +76,18 @@ class RefreshTokenService(
                 revokedAt = Timestamp.from(Instant.now()),
             )
         }
+
+    @Transactional
+    fun deleteRevoked() {
+        refreshTokenRepository.deleteRevoked(
+            revokedBefore = Timestamp.from(Instant.now().minus(7, ChronoUnit.DAYS))
+        )
+    }
+
+    @Transactional
+    fun deleteExpired() {
+        refreshTokenRepository.deleteExpired(
+            now = Timestamp.from(Instant.now())
+        )
+    }
 }

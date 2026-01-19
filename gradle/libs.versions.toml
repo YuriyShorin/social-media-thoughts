@@ -10,6 +10,7 @@ jjwt = "0.13.0"
 springdoc = "3.0.0"
 postgres = "42.7.8"
 hibernate = "7.2.0.Final"
+preliquibase = "2.0.0"
 geoip = "5.0.2"
 mockito-kotlin = "6.1.0"
 
@@ -37,6 +38,8 @@ spring-boot-validation = { module = "org.springframework.boot:spring-boot-starte
 spring-boot-security = { module = "org.springframework.boot:spring-boot-starter-security" }
 spring-boot-actuator = { module = "org.springframework.boot:spring-boot-starter-actuator" }
 spring-boot-liquibase = { module = "org.springframework.boot:spring-boot-starter-liquibase" }
+spring-boot-preliquibase = { module = "net.lbruun.springboot:preliquibase-spring-boot-starter", version.ref = "preliquibase"}
+spring-boot-quartz = { module = "org.springframework.boot:spring-boot-starter-quartz" }
 spring-boot-test = { module = "org.springframework.boot:spring-boot-starter-test" }
 
 spring-cloud-eureka-client = { module = "org.springframework.cloud:spring-cloud-starter-netflix-eureka-client" }
